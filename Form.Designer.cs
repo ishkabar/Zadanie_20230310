@@ -59,6 +59,9 @@
             this.buttonExportCsv = new System.Windows.Forms.Button();
             this.buttonExportXml = new System.Windows.Forms.Button();
             this.tabPageOptions = new System.Windows.Forms.TabPage();
+            this.buttonDatabasePath = new System.Windows.Forms.Button();
+            this.labelDatabasePath = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.labelOpcjePodpis = new System.Windows.Forms.Label();
             this.buttonCreateDatabase = new System.Windows.Forms.Button();
             this.buttonDrop = new System.Windows.Forms.Button();
@@ -377,6 +380,9 @@
             // 
             // tabPageOptions
             // 
+            this.tabPageOptions.Controls.Add(this.buttonDatabasePath);
+            this.tabPageOptions.Controls.Add(this.labelDatabasePath);
+            this.tabPageOptions.Controls.Add(this.label5);
             this.tabPageOptions.Controls.Add(this.labelOpcjePodpis);
             this.tabPageOptions.Controls.Add(this.buttonCreateDatabase);
             this.tabPageOptions.Controls.Add(this.buttonDrop);
@@ -398,6 +404,35 @@
             this.tabPageOptions.Text = "Opcje";
             this.tabPageOptions.UseVisualStyleBackColor = true;
             // 
+            // buttonDatabasePath
+            // 
+            this.buttonDatabasePath.Location = new System.Drawing.Point(154, 114);
+            this.buttonDatabasePath.Name = "buttonDatabasePath";
+            this.buttonDatabasePath.Size = new System.Drawing.Size(74, 26);
+            this.buttonDatabasePath.TabIndex = 30;
+            this.buttonDatabasePath.Text = "Wybierz";
+            this.buttonDatabasePath.UseVisualStyleBackColor = true;
+            this.buttonDatabasePath.Click += new System.EventHandler(this.buttonDatabasePath_Click);
+            // 
+            // labelDatabasePath
+            // 
+            this.labelDatabasePath.AutoSize = true;
+            this.labelDatabasePath.Enabled = false;
+            this.labelDatabasePath.Location = new System.Drawing.Point(7, 127);
+            this.labelDatabasePath.Name = "labelDatabasePath";
+            this.labelDatabasePath.Size = new System.Drawing.Size(84, 13);
+            this.labelDatabasePath.TabIndex = 29;
+            this.labelDatabasePath.Text = "Wybierz ścieżkę";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 114);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(127, 13);
+            this.label5.TabIndex = 28;
+            this.label5.Text = "Folder plików baz danych";
+            // 
             // labelOpcjePodpis
             // 
             this.labelOpcjePodpis.AutoSize = true;
@@ -409,9 +444,10 @@
             // 
             // buttonCreateDatabase
             // 
-            this.buttonCreateDatabase.Location = new System.Drawing.Point(150, 114);
+            this.buttonCreateDatabase.Enabled = false;
+            this.buttonCreateDatabase.Location = new System.Drawing.Point(79, 151);
             this.buttonCreateDatabase.Name = "buttonCreateDatabase";
-            this.buttonCreateDatabase.Size = new System.Drawing.Size(75, 23);
+            this.buttonCreateDatabase.Size = new System.Drawing.Size(74, 20);
             this.buttonCreateDatabase.TabIndex = 26;
             this.buttonCreateDatabase.Text = "Utwórz bazę";
             this.buttonCreateDatabase.UseVisualStyleBackColor = true;
@@ -419,9 +455,9 @@
             // 
             // buttonDrop
             // 
-            this.buttonDrop.Location = new System.Drawing.Point(150, 143);
+            this.buttonDrop.Location = new System.Drawing.Point(154, 151);
             this.buttonDrop.Name = "buttonDrop";
-            this.buttonDrop.Size = new System.Drawing.Size(75, 23);
+            this.buttonDrop.Size = new System.Drawing.Size(74, 20);
             this.buttonDrop.TabIndex = 25;
             this.buttonDrop.Text = "Usuń bazę";
             this.buttonDrop.UseVisualStyleBackColor = true;
@@ -431,28 +467,28 @@
             // 
             this.textBoxDatabase.Location = new System.Drawing.Point(47, 88);
             this.textBoxDatabase.Name = "textBoxDatabase";
-            this.textBoxDatabase.Size = new System.Drawing.Size(178, 20);
+            this.textBoxDatabase.Size = new System.Drawing.Size(181, 20);
             this.textBoxDatabase.TabIndex = 23;
             // 
             // textBoxPassword
             // 
             this.textBoxPassword.Location = new System.Drawing.Point(47, 60);
             this.textBoxPassword.Name = "textBoxPassword";
-            this.textBoxPassword.Size = new System.Drawing.Size(178, 20);
+            this.textBoxPassword.Size = new System.Drawing.Size(181, 20);
             this.textBoxPassword.TabIndex = 22;
             // 
             // textBoxLogin
             // 
             this.textBoxLogin.Location = new System.Drawing.Point(47, 34);
             this.textBoxLogin.Name = "textBoxLogin";
-            this.textBoxLogin.Size = new System.Drawing.Size(178, 20);
+            this.textBoxLogin.Size = new System.Drawing.Size(181, 20);
             this.textBoxLogin.TabIndex = 21;
             // 
             // textBoxServer
             // 
             this.textBoxServer.Location = new System.Drawing.Point(47, 6);
             this.textBoxServer.Name = "textBoxServer";
-            this.textBoxServer.Size = new System.Drawing.Size(178, 20);
+            this.textBoxServer.Size = new System.Drawing.Size(181, 20);
             this.textBoxServer.TabIndex = 20;
             // 
             // label4
@@ -493,9 +529,9 @@
             // 
             // buttonCheck
             // 
-            this.buttonCheck.Location = new System.Drawing.Point(9, 114);
+            this.buttonCheck.Location = new System.Drawing.Point(4, 151);
             this.buttonCheck.Name = "buttonCheck";
-            this.buttonCheck.Size = new System.Drawing.Size(75, 23);
+            this.buttonCheck.Size = new System.Drawing.Size(74, 20);
             this.buttonCheck.TabIndex = 14;
             this.buttonCheck.Text = "Sprawdź";
             this.buttonCheck.UseVisualStyleBackColor = true;
@@ -503,9 +539,9 @@
             // 
             // buttonClean
             // 
-            this.buttonClean.Location = new System.Drawing.Point(9, 143);
+            this.buttonClean.Location = new System.Drawing.Point(4, 177);
             this.buttonClean.Name = "buttonClean";
-            this.buttonClean.Size = new System.Drawing.Size(75, 23);
+            this.buttonClean.Size = new System.Drawing.Size(74, 20);
             this.buttonClean.TabIndex = 13;
             this.buttonClean.Text = "Wyczyść";
             this.buttonClean.UseVisualStyleBackColor = true;
@@ -580,6 +616,9 @@
         private System.Windows.Forms.LinkLabel linkLabelHomeEmail;
         private System.Windows.Forms.Label labelHomeTelefon2;
         private System.Windows.Forms.Label labelHomeAutor2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button buttonDatabasePath;
+        private System.Windows.Forms.Label labelDatabasePath;
     }
 }
 

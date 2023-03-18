@@ -21,27 +21,35 @@ namespace Aplikacja
 {
     public partial class MainForm : Form
     {
-        string connectionString;
+        string databaseFilePath;
         SqlConnection connection = new SqlConnection();
         SqlCommand command = new SqlCommand();
         Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
         Workbook workbook;
         Worksheet worksheet;
-        
+
         public MainForm()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         private void Form_Load(object sender, EventArgs e)
         {
             textBoxPassword.PasswordChar = '*';
             textBoxDatabase.Text = "CN_Test";
+            textBoxLogin.Text = "sa";
+
+            FormClosed += ClosingHandler;
+        }
+
+        private void ClosingHandler(object sender,EventArgs e)
+        {
+            excel.Workbooks.Close();
         }
 
         private void buttonClean_Click(object sender, EventArgs e)
         {
-            textBoxServer.Text = textBoxLogin.Text = textBoxPassword.Text = textBoxDatabase.Text= "";
+            textBoxServer.Text = textBoxLogin.Text = textBoxPassword.Text = textBoxDatabase.Text = "";
         }
 
         private void buttonCheck_Click(object sender, EventArgs e)
@@ -63,7 +71,7 @@ namespace Aplikacja
 
             if (checkConnection)
             {
-                MessageBox.Show("Połączenie poprawne","Sprawdzenie połączenia",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                MessageBox.Show("Połączenie poprawne", "Sprawdzenie połączenia", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
@@ -73,16 +81,21 @@ namespace Aplikacja
 
         private void buttonCreateDatabase_Click(object sender, EventArgs e)
         {
-            connectionString = $"Server={textBoxServer.Text};Database=master;User Id={textBoxLogin.Text};Password={textBoxPassword.Text};";
+            connection.ConnectionString = $"Server={textBoxServer.Text};Database=master;User Id={textBoxLogin.Text};Password={textBoxPassword.Text};";
             command.Connection = connection;
 
+
+            //C:\Program Files\Microsoft SQL Server\MSSQL15.SQL1
+            //databaseFilePath
             string databaseCreateQuery =
                         $"CREATE DATABASE {textBoxDatabase.Text} ON PRIMARY " +
                         $"(NAME = {textBoxDatabase.Text}, " +
-                        $"FILENAME = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL14.SERVERDMS214\\MSSQL\\DATA\\{textBoxDatabase.Text}.mdf', " +
+                        //$"FILENAME = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQL1\\MSSQL\\DATA\\{textBoxDatabase.Text}.mdf', " +
+                        $"FILENAME = '{databaseFilePath}\\{textBoxDatabase.Text}.mdf', " +
                         "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%)" +
                         $"LOG ON (NAME = {textBoxDatabase.Text}_Log, " +
-                        $"FILENAME = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL14.SERVERDMS214\\MSSQL\\DATA\\{textBoxDatabase.Text}Log.ldf', " +
+                        //$"FILENAME = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQL1\\MSSQL\\DATA\\{textBoxDatabase.Text}Log.ldf', " +
+                        $"FILENAME = '{databaseFilePath}\\{textBoxDatabase.Text}Log.ldf', " +
                         "SIZE = 1MB, " +
                         "MAXSIZE = 5MB, " +
                         "FILEGROWTH = 10%)";
@@ -125,7 +138,11 @@ namespace Aplikacja
             }
             catch (SqlException sqlEx)
             {
-                MessageBox.Show(sqlEx.Message.ToString(), "Aplikacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (sqlEx.ErrorCode== -2146232060)
+                {
+                    MessageBox.Show("Plik już istnieje, lub silnik SQL nie ma dostępu do tego folderu.");
+                }
+                else {MessageBox.Show(sqlEx.Message.ToString(), "Aplikacja", MessageBoxButtons.OK, MessageBoxIcon.Information); }                
             }
             catch (Exception ex)
             {
@@ -142,7 +159,7 @@ namespace Aplikacja
 
         private void buttonDrop_Click(object sender, EventArgs e)
         {
-            connection.ConnectionString= $"Server={textBoxServer.Text};Database=master;User Id={textBoxLogin.Text};Password={textBoxPassword.Text};";
+            connection.ConnectionString = $"Server={textBoxServer.Text};Database=master;User Id={textBoxLogin.Text};Password={textBoxPassword.Text};";
             command.Connection = connection;
             command.CommandText = $"DROP DATABASE {textBoxDatabase.Text}";
 
@@ -194,24 +211,24 @@ namespace Aplikacja
                     }
                     labelImportPlikNazwa.Enabled = true;
                     labelImportPlikNazwa.Text = Regex.Match(openDialog.FileName, @"[^\\]*$").Value;
-                    buttonImport.Enabled = true;
+                    buttonImport.Enabled = true;                    
                 }
                 catch (IOException ex)
                 {
                     MessageBox.Show(ex.ToString());
                 }
             }
-            else { }                                
-        }      
+            else { }
+        }
 
         private void buttonImport_Click(object sender, EventArgs e)
         {
             string insertQuery;
-            int dzialID = comboBoxImportDzial.SelectedIndex+1;
-            int nazwiskoID = comboBoxImportNazwisko.SelectedIndex+1;
-            int imieID = comboBoxImportImie.SelectedIndex+1;
-            int kodID = comboBoxImportKod.SelectedIndex+1;
-            int stanowiskoID = comboBoxImportStanowisko.SelectedIndex + 1;            
+            int dzialID = comboBoxImportDzial.SelectedIndex + 1;
+            int nazwiskoID = comboBoxImportNazwisko.SelectedIndex + 1;
+            int imieID = comboBoxImportImie.SelectedIndex + 1;
+            int kodID = comboBoxImportKod.SelectedIndex + 1;
+            int stanowiskoID = comboBoxImportStanowisko.SelectedIndex + 1;
 
             try
             {
@@ -219,15 +236,15 @@ namespace Aplikacja
                 connection.Open();
                 command.Connection = connection;
 
-                for (int i = 2; i <= worksheet.UsedRange.Rows.Count; i++)
+                for (int i = 2; i < worksheet.UsedRange.Rows.Count; i++)
                 {
-                    insertQuery = 
+                    insertQuery =
                         $"INSERT INTO {textBoxDatabase.Text}.dbo.CN_Pracownicy (" +
                                     $"[Prac_Dzial]," +
                                     $"[Prac_Kod]," +
                                     $"[Prac_Nazwisko]," +
                                     $"[Prac_Imie]," +
-                                    $"[Prac_Stanowisko])" + 
+                                    $"[Prac_Stanowisko])" +
                         $"values (" +
                                     $"'{worksheet.Cells[i, dzialID].value}', " +
                                     $"'{worksheet.Cells[i, kodID].value}', " +
@@ -242,12 +259,12 @@ namespace Aplikacja
             }
             catch (COMException ex)
             {
-                if(ex.ErrorCode == -2146827284)
+                if (ex.ErrorCode == -2146827284)
                 {
                     MessageBox.Show("Uzupełnij wszystkie pola", "Aplikacja", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                else 
-                { 
+                else
+                {
                     MessageBox.Show(ex.ToString(), "Aplikacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -266,7 +283,7 @@ namespace Aplikacja
             SqlDataAdapter dataAdapter = new SqlDataAdapter();
             DataSet dataSet = new DataSet();
 
-            saveDialog.Filter = "All files (*.*) | *.*";
+            saveDialog.Filter = "XML Files|*.xml";
             DialogResult result = saveDialog.ShowDialog();
 
             connection.ConnectionString = $"Server={textBoxServer.Text};Database={textBoxDatabase.Text};User Id={textBoxLogin.Text};Password={textBoxPassword.Text};";
@@ -296,7 +313,8 @@ namespace Aplikacja
         {
             SaveFileDialog saveDialog = new SaveFileDialog();
 
-            saveDialog.Filter = "All files (*.*) | *.*";
+            saveDialog.Filter = "CSV Files|*.csv";
+            //CSV Files|*.csv
             DialogResult result = saveDialog.ShowDialog();
 
             connection.ConnectionString = $"Server={textBoxServer.Text};Database={textBoxDatabase.Text};User Id={textBoxLogin.Text};Password={textBoxPassword.Text};";
@@ -307,7 +325,7 @@ namespace Aplikacja
             if (result == DialogResult.OK)
             {
                 try
-                {                    
+                {
                     SqlDataReader reader = command.ExecuteReader();
                     StreamWriter writer = new StreamWriter(saveDialog.FileName);
 
@@ -339,9 +357,31 @@ namespace Aplikacja
 
         private void linkLabelMail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "dom.karczewski@gmail.com", "Odpowiedź na zadanie", "Panie Dominiku,"+Environment.NewLine+"Zadanie wykonane świetnie!");
+            string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "dom.karczewski@gmail.com", "Odpowiedź na zadanie", "Panie Dominiku," + Environment.NewLine + "Zadanie wykonane świetnie!");
             mailto = Uri.EscapeUriString(mailto);
             System.Diagnostics.Process.Start(mailto);
+        }
+
+        private void buttonDatabasePath_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog openDialog = new FolderBrowserDialog();
+            DialogResult result = openDialog.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(openDialog.SelectedPath))
+            {
+                try
+                {
+                    int databasePathLen;
+                    //string path = openDialog.SelectedPath;
+                    //MessageBox.Show("Files found: " + path, "Message");
+                    databaseFilePath = openDialog.SelectedPath;
+                    databasePathLen = databaseFilePath.Length;
+                    labelDatabasePath.Text = databaseFilePath.Substring(0, 9) + "..." + databaseFilePath.Substring(databasePathLen-12,12);
+                    labelDatabasePath.Enabled = true;
+                    buttonCreateDatabase.Enabled = true;
+                }
+                catch { }
+            }
         }
     }
 }
